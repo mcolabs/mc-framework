@@ -14,8 +14,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 $request = Request::createFromGlobals();
 
-$input = $request->get('name', 'World');
+try {
+    $match = (new \McFramework\Component\Routing()->match($request));
+    extract($match, EXTR_SKIP);
+    ob_start();
+    include sprintf(__DIR__.'/../src/Controller/%s.php', $_route);
 
-$response = new Response(sprintf('Hello %s', htmlspecialchars($input, ENT_QUOTES, 'UTF-8')));
+    $response = new Response(ob_get_clean());
+} catch (\Symfony\Component\Routing\Exception\ResourceNotFoundException $e) {
+    $response = new Response('Not Found', 404);
+} catch (Exception $e) {
+    $response = new Response('An error occurred', 500);
+}
 
 $response->send();
