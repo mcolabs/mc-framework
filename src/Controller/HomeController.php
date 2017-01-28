@@ -9,6 +9,8 @@
 
 namespace McFramework\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
+
 /**
  * Class HomeController
  *
@@ -16,5 +18,13 @@ namespace McFramework\Controller;
  */
 class HomeController
 {
-
+    /**
+     * Home page
+     *
+     * @return Response
+     */
+    public function indexAction()
+    {
+        return new Response('Hello !');
+    }
 }

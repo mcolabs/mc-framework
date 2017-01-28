@@ -10,21 +10,11 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use McFramework\Component\Router;
 
 $request = Request::createFromGlobals();
+$routes = include __DIR__.'/../app/config/routes.php';
 
-try {
-    $match = (new \McFramework\Component\Routing()->match($request));
-    extract($match, EXTR_SKIP);
-    ob_start();
-    include sprintf(__DIR__.'/../src/Controller/%s.php', $_route);
-
-    $response = new Response(ob_get_clean());
-} catch (\Symfony\Component\Routing\Exception\ResourceNotFoundException $e) {
-    $response = new Response('Not Found', 404);
-} catch (Exception $e) {
-    $response = new Response('An error occurred', 500);
-}
+$response = (new Router($routes))->resolveController($request);
 
 $response->send();
