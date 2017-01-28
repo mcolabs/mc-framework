@@ -20,9 +20,13 @@
         "phpunit/phpunit": "^4.0",
         "phake/phake": "@stable"
     },
+    "autoload": {
+        "psr-4": {
+            "McFramework\\": "src/"
+        }
+    },
     "autoload-dev": {
-        "psr-4" : {
-            "McFramework\\" : "src/",
+        "psr-4": {
             "Tests\\": "tests/"
         }
     },
