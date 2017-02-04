@@ -14,11 +14,11 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Class ContentLengthListener
+ * Class HttpCacheListener
  *
  * @author Michael COULLERET <michael@coulleret.pro>
  */
-class ContentLengthListener implements EventSubscriberInterface
+class HttpCacheListener implements EventSubscriberInterface
 {
     /**
      * On response event
@@ -27,12 +27,21 @@ class ContentLengthListener implements EventSubscriberInterface
      */
     public function onResponse(FilterResponseEvent $event)
     {
-        $response = $event->getResponse();
-        $headers = $response->headers;
-
-        if (!$headers->has('Content-Length') && !$headers->has('Transfer-Encoding')) {
-            $headers->set('Content-Length', strlen($response->getContent()));
+        if (false === $event->isMasterRequest()) {
+            return;
         }
+
+        $response = $event->getResponse();
+
+        $response->setCache([
+            'public'        => true,
+            'etag'          => md5($response),
+            'last_modified' => new \DateTime(),
+            'max_age'       => 10,
+            's_maxage'      => 10,
+        ]);
+
+        $event->setResponse($response);
     }
 
     /**

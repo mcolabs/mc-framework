@@ -15,7 +15,10 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use McFramework\EventListener\ContentLengthListener;
+use Symfony\Component\HttpKernel\HttpCache\HttpCache;
+use Symfony\Component\HttpKernel\HttpCache\Store;
+use \Symfony\Component\HttpKernel\HttpCache\Esi;
+use McFramework\EventListener\HttpCacheListener;
 
 use McFramework\Framework;
 
@@ -24,8 +27,15 @@ $routes = include __DIR__.'/../app/config/routes.php';
 $urlMatcher = new UrlMatcher($routes, new RequestContext());
 
 $dispatcher = new EventDispatcher();
-$dispatcher->addSubscriber(new ContentLengthListener());
+$dispatcher->addSubscriber(new HttpCacheListener());
 
-$response = (new Framework($dispatcher, $urlMatcher, new ControllerResolver(), new ArgumentResolver()))->handle($request);
+$framework = new Framework($dispatcher, $urlMatcher, new ControllerResolver(), new ArgumentResolver());
 
-$response->send();
+$framework = new HttpCache(
+    $framework,
+    new Store(__DIR__.'/../var/cache/'),
+    new Esi(),
+    array('debug' => $framework->isDebug())
+);
+
+$framework->handle($request)->send();
