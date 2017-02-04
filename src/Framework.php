@@ -48,19 +48,38 @@ class Framework implements HttpKernelInterface
     protected $argumentResolver;
 
     /**
+     * @var string
+     */
+    protected $environment;
+
+    /**
+     * @var bool
+     */
+    protected $debug = false;
+
+    /**
      * constructor Framework
      *
      * @param EventDispatcher             $eventDispatcher
      * @param UrlMatcherInterface         $urlMatcher
      * @param ControllerResolverInterface $controllerResolver
      * @param ArgumentResolverInterface   $argumentResolver
+     * @param string                      $environment
+     * @param boolean                     $debug
      */
-    public function __construct(EventDispatcher $eventDispatcher, UrlMatcherInterface $urlMatcher, ControllerResolverInterface $controllerResolver, ArgumentResolverInterface $argumentResolver)
-    {
+    public function __construct(
+        EventDispatcher $eventDispatcher,
+        UrlMatcherInterface $urlMatcher,
+        ControllerResolverInterface $controllerResolver,
+        ArgumentResolverInterface $argumentResolver,
+        $environment = 'prod',
+        $debug = false
+    ) {
         $this->dispatcher = $eventDispatcher;
         $this->urlMatcher = $urlMatcher;
         $this->controllerResolver = $controllerResolver;
         $this->argumentResolver = $argumentResolver;
+        $this->environment = $environment;
     }
 
     /**
@@ -86,5 +105,25 @@ class Framework implements HttpKernelInterface
         $this->dispatcher->dispatch(KernelEvents::RESPONSE, new FilterResponseEvent($this, $request, $type, $response));
 
         return $response;
+    }
+
+    /**
+     * Get environment
+     *
+     * @return string
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * is Debug
+     *
+     * @return boolean
+     */
+    public function isDebug()
+    {
+        return $this->debug;
     }
 }

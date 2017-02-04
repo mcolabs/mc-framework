@@ -25,6 +25,6 @@ class HomeController
      */
     public function indexAction()
     {
-        return new Response('Hello !');
+        return new Response('Hello ! '.rand());
     }
 }
