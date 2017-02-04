@@ -14,6 +14,8 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use McFramework\EventListener\ContentLengthListener;
 
 use McFramework\Framework;
 
@@ -21,6 +23,9 @@ $request = Request::createFromGlobals();
 $routes = include __DIR__.'/../app/config/routes.php';
 $urlMatcher = new UrlMatcher($routes, new RequestContext());
 
-$response = (new Framework($urlMatcher, new ControllerResolver(), new ArgumentResolver()))->handle($request);
+$dispatcher = new EventDispatcher();
+$dispatcher->addSubscriber(new ContentLengthListener());
+
+$response = (new Framework($dispatcher, $urlMatcher, new ControllerResolver(), new ArgumentResolver()))->handle($request);
 
 $response->send();
