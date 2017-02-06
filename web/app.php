@@ -17,15 +17,6 @@ $routes = include __DIR__.'/../app/config/routes.php';
 
 $kernel = new Kernel($routes);
 
-<<<<<<< Updated upstream
-$framework = new HttpCache(
-    $framework,
-    new Store(__DIR__.'/../var/cache/'),
-    new Esi(),
-    array('debug' => $framework->isDebug())
-);
-=======
 //$kernel = McFramework\Cache($kernel);
->>>>>>> Stashed changes
 
 $kernel->handle($request)->send();
