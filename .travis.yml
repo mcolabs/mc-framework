@@ -1,0 +1,15 @@
+language: php
+php:
+    - 7.0
+    - 7.1
+before_script:
+    - composer install --prefer-source
+
+script: phpunit --coverage-text --coverage-clover=coverage.clover
+
+after_script:
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+    - php ocular.phar code-coverage:upload --access-token="a1923083f07010e070df184d69606b96a5fb46c6824e02dafd874b93e598bf72" --format=php-clover coverage.clover
+
+language: php
